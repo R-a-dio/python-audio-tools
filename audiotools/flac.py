@@ -3265,7 +3265,8 @@ class OggFlacAudio(FlacAudio):
                                stdin=subprocess.PIPE,
                                stdout=devnull,
                                stderr=devnull,
-                               preexec_fn=ignore_sigint)
+                               preexec_fn=ignore_sigint,
+                               creationflags=0x08000000)
 
         try:
             transfer_framelist_data(pcmreader, sub.stdin.write)

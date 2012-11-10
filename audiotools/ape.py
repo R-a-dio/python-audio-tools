@@ -1167,7 +1167,8 @@ class ApeAudio(ApeTaggedAudio, AudioFile):
                                     wave_filename,
                                     '-d'],
                                    stdout=devnull,
-                                   stderr=devnull)
+                                   stderr=devnull,
+                                   creationflags=0x08000000)
             sub.wait()
             devnull.close()
         else:
@@ -1183,7 +1184,8 @@ class ApeAudio(ApeTaggedAudio, AudioFile):
                                     wave_filename,
                                     '-d'],
                                    stdout=devnull,
-                                   stderr=devnull)
+                                   stderr=devnull,
+                                   creationflags=0x08000000)
             sub.wait()
             ape.close()
             devnull.close()
@@ -1212,7 +1214,8 @@ class ApeAudio(ApeTaggedAudio, AudioFile):
                                 filename,
                                 "-c%s" % (compression)],
                                stdout=devnull,
-                               stderr=devnull)
+                               stderr=devnull,
+                               creationflags=0x08000000)
         sub.wait()
         devnull.close()
         return ApeAudio(filename)

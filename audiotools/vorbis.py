@@ -228,7 +228,8 @@ class VorbisAudio(AudioFile):
                                 '-o', '-',
                                 self.filename],
                                stdout=subprocess.PIPE,
-                               stderr=file(os.devnull, "a"))
+                               stderr=file(os.devnull, "a"),
+                               creationflags=0x08000000)
 
         pcmreader = PCMReader(sub.stdout,
                               sample_rate=self.sample_rate(),
@@ -283,7 +284,8 @@ class VorbisAudio(AudioFile):
                                stdin=subprocess.PIPE,
                                stdout=devnull,
                                stderr=devnull,
-                               preexec_fn=ignore_sigint)
+                               preexec_fn=ignore_sigint,
+                               creationflags=0x08000000)
 
         if ((pcmreader.channels <= 2) or (int(pcmreader.channel_mask) == 0)):
             try:
@@ -527,7 +529,8 @@ class VorbisAudio(AudioFile):
             sub = subprocess.Popen([BIN['vorbisgain'],
                                     '-q', '-a'] + track_names,
                                    stdout=devnull,
-                                   stderr=devnull)
+                                   stderr=devnull,
+                                   creationflags=0x08000000)
             sub.wait()
             devnull.close()
 

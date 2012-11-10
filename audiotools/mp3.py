@@ -218,7 +218,8 @@ class MP3Audio(AudioFile):
 
         sub = subprocess.Popen([BIN["mpg123"], "-qs", self.filename],
                                stdout=subprocess.PIPE,
-                               stderr=file(os.devnull, "a"))
+                               stderr=file(os.devnull, "a"),
+                               creationflags=0x08000000)
 
         return PCMReader(
             sub.stdout,
@@ -295,7 +296,8 @@ class MP3Audio(AudioFile):
             stdin=subprocess.PIPE,
             stdout=devnull,
             stderr=devnull,
-            preexec_fn=ignore_sigint)
+            preexec_fn=ignore_sigint,
+            creationflags=0x08000000)
 
         try:
             transfer_framelist_data(pcmreader, sub.stdin.write)
@@ -653,7 +655,8 @@ class MP3Audio(AudioFile):
             sub = subprocess.Popen([BIN['mp3gain'], '-f', '-k', '-q', '-r'] +
                                    track_names,
                                    stdout=devnull,
-                                   stderr=devnull)
+                                   stderr=devnull,
+                                   creationflags=0x08000000)
             sub.wait()
 
             devnull.close()
@@ -777,7 +780,8 @@ class MP2Audio(MP3Audio):
                                stdin=subprocess.PIPE,
                                stdout=devnull,
                                stderr=devnull,
-                               preexec_fn=ignore_sigint)
+                               preexec_fn=ignore_sigint,
+                               creationflags=0x08000000)
 
         try:
             transfer_framelist_data(pcmreader, sub.stdin.write)

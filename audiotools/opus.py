@@ -309,7 +309,8 @@ class OpusAudio(VorbisAudio):
                                 "--rate", str(48000),
                                 self.filename, "-"],
                                stdout=subprocess.PIPE,
-                               stderr=file(os.devnull, "a"))
+                               stderr=file(os.devnull, "a"),
+                               creationflags=0x08000000)
 
         pcmreader = PCMReader(sub.stdout,
                               sample_rate=self.sample_rate(),
@@ -383,7 +384,8 @@ class OpusAudio(VorbisAudio):
                                 "-", filename],
                                stdin=subprocess.PIPE,
                                stdout=devnull,
-                               stderr=devnull)
+                               stderr=devnull,
+                               creationflags=0x08000000)
 
         try:
             transfer_framelist_data(pcmreader, sub.stdin.write)

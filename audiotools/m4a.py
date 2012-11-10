@@ -415,7 +415,8 @@ class M4AAudio_faac(M4ATaggedAudio, AudioFile):
         sub = subprocess.Popen([BIN['faad'], "-f", str(2), "-w",
                                 self.filename],
                                stdout=subprocess.PIPE,
-                               stderr=devnull)
+                               stderr=devnull,
+                               creationflags=0x08000000)
         return PCMReader(
             sub.stdout,
             sample_rate=self.sample_rate(),
@@ -479,7 +480,8 @@ class M4AAudio_faac(M4ATaggedAudio, AudioFile):
                                stdin=subprocess.PIPE,
                                stderr=devnull,
                                stdout=devnull,
-                               preexec_fn=ignore_sigint)
+                               preexec_fn=ignore_sigint,
+                               creationflags=0x08000000)
         #Note: faac handles SIGINT on its own,
         #so trying to ignore it doesn't work like on most other encoders.
 
@@ -560,7 +562,8 @@ class M4AAudio_faac(M4ATaggedAudio, AudioFile):
             sub = subprocess.Popen([BIN['aacgain'], '-k', '-q', '-r'] +
                                    track_names,
                                    stdout=devnull,
-                                   stderr=devnull)
+                                   stderr=devnull,
+                                   creationflags=0x08000000)
             sub.wait()
 
             devnull.close()
@@ -661,7 +664,8 @@ class M4AAudio_nero(M4AAudio_faac):
                                     "-if", self.filename,
                                     "-of", wave_file],
                                    stdout=devnull,
-                                   stderr=devnull)
+                                   stderr=devnull,
+                                   creationflags=0x08000000)
             if (sub.wait() != 0):
                 raise EncodingError(u"unable to write file with neroAacDec")
         finally:
@@ -680,7 +684,8 @@ class M4AAudio_nero(M4AAudio_faac):
                                     "-if", wave_filename,
                                     "-of", filename],
                                    stdout=devnull,
-                                   stderr=devnull)
+                                   stderr=devnull,
+                                   creationflags=0x08000000)
 
             if (sub.wait() != 0):
                 raise EncodingError(u"neroAacEnc unable to write file")

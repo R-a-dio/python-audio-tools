@@ -37,14 +37,34 @@ class FadeOut(Fade):
     """Fades out a track `fade` seconds from the end of the track.
     """
     def __init__(self, pcmreader, total_frames, current_frames=0,
-                 fade=3.0):
+                 fade=3.0, buffered=False):
         super(FadeOut, self).__init__(pcmreader, total_frames,
                 current_frames=current_frames, fade=fade)
         self._current_increment = 1.0
         self.target_frames = self.total_frames - (self.sample_rate * fade)
         self._increment = 1.0 / (self.sample_rate * fade)
         
+        
+        self.buffered = buffered
+        self.buffer = audiotools.pcm.from_list([],
+                                    self.channels,
+                                    self.bits_per_sample,
+                                    True)
+        
     def read(self, pcm_frames):
+        if self.buffered:
+            while (self.buffer.frames < pcm_frames):
+                frame = self.read_frames(pcm_frames)
+                if (len(frame)):
+                    self.buffer += frame
+                else:
+                    break
+            (output, self.buffer) = self.buffer.split(pcm_frames)
+            return output
+        else:
+            return self.read_frames(pcm_frames)
+        
+    def read_frames(self, pcm_frames):
         frame = self.__read__(pcm_frames)
         if (self.current_frames + frame.frames) > self.target_frames:
             new_frame = []
@@ -61,19 +81,37 @@ class FadeOut(Fade):
         else:
             self.current_frames += frame.frames
         return frame
-        
-        
+    
 class FadeIn(Fade):
     """Fades in a track `fade` seconds from the start of the track."""
     def __init__(self, pcmreader, total_frames, current_frames=0,
-                 fade=3.0):
+                 fade=3.0, buffered=False):
         super(FadeIn, self).__init__(pcmreader, total_frames,
                 current_frames=current_frames, fade=fade)
         self._current_increment = 0.0
         self.target_frames = self.sample_rate * fade
         self._increment = 1.0 / self.target_frames
         
+        self.buffered = buffered
+        self.buffer = audiotools.pcm.from_list([],
+                                    self.channels,
+                                    self.bits_per_sample,
+                                    True)
+        
     def read(self, pcm_frames):
+        if self.buffered:
+            while (self.buffer.frames < pcm_frames):
+                frame = self.read_frames(pcm_frames)
+                if (len(frame)):
+                    self.buffer += frame
+                else:
+                    break
+            (output, self.buffer) = self.buffer.split(pcm_frames)
+            return output
+        else:
+            return self.read_frames(pcm_frames)
+        
+    def read_frames(self, pcm_frames):
         frame = self.__read__(pcm_frames)
         if self.current_frames < self.target_frames:
             new_frame = []
@@ -90,7 +128,7 @@ class FadeIn(Fade):
         else:
             self.current_frames += frame.frames
         return frame
-        
+    
 def to_fade_in(audiofile, fade=3.0):
     """Wraps an audiofile in a FadeIn class with `fade` seconds of fading."""
     if not fade:
